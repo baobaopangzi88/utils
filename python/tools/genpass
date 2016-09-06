@@ -20,6 +20,8 @@ def get_config():
         #  =表示后面有参数
         longopts = ['help','info', 'password=', 'salt=', 'length=','method=']
         optlist, _ = getopt.getopt(sys.argv[1:],shortopts,longopts)
+        if not optlist:
+            raise getopt.GetoptError("")
         for key, value in optlist:
             if key == '-p' or key == '--password':
                 config['password'] = value
