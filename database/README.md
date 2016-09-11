@@ -50,7 +50,7 @@
         可以用索引实现排序  
   
 ## MySQL 特性  
-- 支持事务(Innodb,MyISAM)  
+- 支持事务(Innodb)  
     - MongoDB用法  
         支持单文档级别的ACID  
     - Redis用法  
