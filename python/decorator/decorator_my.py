@@ -1,4 +1,5 @@
 
+# web应用中返回给前端json数据
 ALLOWED_ORIGINS_PAT = re.compile(r"https?://(\w+\.)?(wantjr)\.(com|cn|cc)")
 def json_decorator(func):
     """ 
@@ -30,7 +31,7 @@ def json_decorator(func):
             response = HttpResponseRedirect(context.get("redirect_url"))
         else:
             template = kwargs.get("template","home.html")
-            # 可能有返回不同模板到需求
+            # 可能有返回不同模板的需求
             if context.get("template"):
                 template = context.get("template")
             response = render(request,template,context)
@@ -42,7 +43,11 @@ return json_decorator
 
 
 
-# ================================ 缓存装饰器 =============================================
+
+
+
+
+#  缓存不同参数的函数的值(含ttl)
 class cached_func(object):
     """ 
         用来缓存类中方法的装饰器
@@ -110,10 +115,9 @@ def get_data(n=0):
 
 
 
-# ====================== 线程互斥锁 ======================================
-from threading import Lock,Thread
+# 互斥锁
+from threading import Lock
 my_lock = Lock()
-
 
 def synchronized(lock):
     def wrap(func):
@@ -133,7 +137,7 @@ def show():
 
 
 
-# ====================单例模式====================
+# 单例模式
 import functools
 def singleton(cls):
     ''' Use class as singleton. '''
@@ -153,7 +157,7 @@ def singleton(cls):
     return cls
 
 
-# ================多线程计算 ================
+# 多线程计算
 import threading, sys, functools, traceback
 def lazy_thunkify(f):
     """Make a function immediately return a function of no args which, when called,
@@ -174,10 +178,8 @@ def lazy_thunkify(f):
     @functools.wraps(f)
     def lazy_thunked(*args, **kwargs):
         wait_event = threading.Event()
-
         result = [None]
         exc = [False, None]
-
         def worker_func():
             try:
                 func_result = f(*args, **kwargs)
@@ -196,11 +198,8 @@ def lazy_thunkify(f):
                 raise exc[1][0], exc[1][1], exc[1][2]
 
             return result[0]
-
         threading.Thread(target=worker_func).start()
-
         return thunk
-
     return lazy_thunked
 
 

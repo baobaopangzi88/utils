@@ -4,7 +4,7 @@
 """
 
 
-# 带参数的装饰器
+# 带参数装饰器的用法
 def deco(arg,arg2):
     print 'deco start'
     def _deco(func):
@@ -32,7 +32,9 @@ def deco2(arg,arg2):
     return _deco
 
 
-# 装饰器的嵌套
+
+
+# 装饰器嵌套装饰器的顺序
 @deco2(arg="yes2",arg2="no2")
 @deco(arg="yes",arg2="no")
 def show(name):
@@ -40,7 +42,8 @@ def show(name):
 
 
 
-# 类装饰器
+
+# 用类实现装饰器
 # 介绍这个用法，后面的描述器部分会用到
 class Foo(object):
     def __init__(self,func):
@@ -51,8 +54,6 @@ class Foo(object):
         self._func(*args,**kwargs)
         print 'end'
     
-    # def __get__(self,instance,owner):
-    #     pass
 @Foo
 def show(name):
     print name
@@ -60,7 +61,8 @@ def show(name):
 
 
 
-# 类中装饰器
+
+# 用函数实现装饰器
 def cached_method(flush_time):
     def _cached(func):
         def __cached(*args,**kwargs):
@@ -72,7 +74,6 @@ def cached_method(flush_time):
     return _cached
 
 
-# 自己的简单实现，具体缓存可以参照官网实现
 class A(object):
     @cached_method(123)
     def show(self,name):

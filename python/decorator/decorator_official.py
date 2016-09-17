@@ -1,32 +1,20 @@
 # -*- coding:utf8 -*-
-import time
 
 
-# 用来记录文档的装饰器
+# 保存使用装饰器前的原函数名字、注释等属性(装饰器的装饰器)
 def simple_decorator(decorator):
-    '''This decorator can be used to turn simple functions
-    into well-behaved decorators, so long as the decorators
-    are fairly simple. If a decorator expects a function and
-    returns a function (no descriptors), and if it doesn't
-    modify function attributes or docstring, then it is
-    eligible to use this. Simply apply @simple_decorator to
-    your decorator and it will automatically preserve the
-    docstring and function attributes of functions to which
-    it is applied.'''
     def new_decorator(f):
         g = decorator(f)
         g.__name__ = f.__name__
         g.__doc__ = f.__doc__
         g.__dict__.update(f.__dict__)
         return g
-    # Now a few lines needed to make simple_decorator itself
-    # be a well-behaved decorator.
     new_decorator.__name__ = decorator.__name__
     new_decorator.__doc__ = decorator.__doc__
     new_decorator.__dict__.update(decorator.__dict__)
     return new_decorator
 
-# Sample Use:
+# Sample Usage:
 @simple_decorator
 def my_simple_logging_decorator(func):
     def you_will_never_see_this_name(*args, **kwargs):
@@ -40,44 +28,22 @@ def double(x):
     return 2 * x
 
 
-# 记录一个缓存属性
+
+
+
+
+
+
+
+
+# 缓存类中属性,包含ttl值(比如每隔1个小时会变动的access_token,可以用这个装饰器缓存)
 class cached_property(object):
-    '''Decorator for read-only properties evaluated only once within TTL period.
-
-    It can be used to create a cached property like this::
-
-        import random
-
-        # the class containing the property must be a new-style class
-        class myclass(object):
-            # create property whose value is cached for ten minutes
-            @cached_property(ttl=600)
-            def randint(self):
-                # will only be evaluated every 10 min. at maximum.
-                return random.randint(0, 100)
-
-    The value is cached  in the '_cache' attribute of the object instance that
-    has the property getter method wrapped by this decorator. The '_cache'
-    attribute value is a dictionary which has a key for every property of the
-    object which is wrapped by this decorator. Each entry in the cache is
-    created only when the property is accessed for the first time and is a
-    two-element tuple with the last computed property value and the last time
-    it was updated in seconds since the epoch.
-
-    The default time-to-live (TTL) is 300 seconds (5 minutes). Set the TTL to
-    zero for the cached value to never expire.
-
-    To expire a cached property value manually just do::
-
-        del instance._cache[<property name>]
-
-    '''
     def __init__(self, ttl=300):
         self.ttl = ttl
 
-    def __call__(self, fget, doc=None):
+    def __call__(self, fget):
         self.fget = fget
-        self.__doc__ = doc or fget.__doc__
+        self.__doc__ = fget.__doc__
         self.__name__ = fget.__name__
         self.__module__ = fget.__module__
         return self
@@ -98,15 +64,23 @@ class cached_property(object):
         return value
 
 
+# Sample Usage:
 class myclass(object):
     # create property whose value is cached for ten minutes
     @cached_property(ttl=600)
-    def randint(self,doc="asd"):
+    def randint(self):
         """ will only be evaluated every 10 min. at maximum. """
         return random.randint(0, 100)
 
 
-# 实现属性的方法
+
+
+
+
+
+
+# 基本属性的实现
+# 包含获取，设置，删除
 class A(object):
     @property
     def rad():
@@ -123,14 +97,17 @@ class A(object):
             del self._half
 
 
-# 相同参数直接返回参数的值
+
+
+
+
+
+
+
+# 缓存不同参数的函数的值
 import collections
 import functools
 class memoized(object):
-   '''Decorator. Caches a function's return value each time it is called.
-   If called later with the same arguments, the cached value is returned
-   (not reevaluated).
-   '''
    def __init__(self, func):
       self.func = func
       self.cache = {}
@@ -150,7 +127,7 @@ class memoized(object):
       '''Return the function's docstring.'''
       return self.func.__doc__
    def __get__(self, obj, objtype):
-      '''Support instance methods.'''
+      ''' 为了在类中也可以使用  '''
       return functools.partial(self.__call__, obj)
 
 
