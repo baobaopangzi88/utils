@@ -12,13 +12,13 @@ DICT_METHOD = {
 }
 
 def get_config():
-    config = {"password":"password","salt":"salt","length":12,"method":"sha256"}
+    config = {"password":"password","salt":"salt","length":12,"method":"sha256","mode":0}
     detail_mode = False
     try:
         # :表示后面有参数
-        shortopts = 'hip:s:l:m:'
+        shortopts = 'hirp:s:l:m:'
         #  =表示后面有参数
-        longopts = ['help','info', 'password=', 'salt=', 'length=','method=']
+        longopts = ['help','info','raw', 'password=', 'salt=', 'length=','method=']
         optlist, _ = getopt.getopt(sys.argv[1:],shortopts,longopts)
         if not optlist:
             raise getopt.GetoptError("")
@@ -36,6 +36,8 @@ def get_config():
                 sys.exit(0)
             elif key=='-i' or key=='--info':
                 detail_mode = True
+            elif key=='-r' or key=='--raw':
+                config['mode'] = 1 
     except getopt.GetoptError as e:
         print_help()
         sys.exit(1)
@@ -43,13 +45,13 @@ def get_config():
         print "your config : %s"%config
     return config
 
-def generate_password(password, salt, length, method):
+def generate_password(password, salt, length, method, mode):
     """ 
         通过哈希，将一段简单的密码转化为复杂到密码
         为了让这个算法容易实现,采用简单的加盐的方式 
     """
     hash_method = DICT_METHOD.get(method, hashlib.sha256)
-    return hash_method(password+salt).hexdigest()[:int(length)]
+    return hash_method(password+salt).hexdigest()[:int(length)],mode
 
 
 def print_help():
@@ -66,6 +68,7 @@ General options:
   -m METHOD, --method METHOD         password hash 
   -h, --help                         show this help message and exit
   -i, --info                         show origanl password
+  -r, --raw                          only show the raw password
 
 if you want to use the tool in anywhere,you can config like this
     vim ~/.bashrc (append the code below)
@@ -74,4 +77,8 @@ if you want to use the tool in anywhere,you can config like this
 
 
 if __name__=="__main__":
-    print "your password : %s"%generate_password(**get_config())
+    ans,_ =generate_password(**get_config())
+    if not _:
+        print "your password : %s"%ans
+    else:
+        print ans
