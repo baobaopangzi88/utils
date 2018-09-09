@@ -17,3 +17,7 @@ swapoff /swapfile && rm /swapfile
 # 开机自动挂载
 echo """
 /swapfile swap swap defaults 0 0""" >> /etc/fstab
+
+
+# 关闭缓存并且重新打开，会强制把 缓存放在内存中
+swapoff -a && swapon -a
